@@ -1,0 +1,66 @@
+:host  {
+  --border-color: gainsboro;
+  --inactive-color: gainsboro;
+}
+
+.page-editor {
+  position: relative;
+
+  & > h4 {
+    margin: 0;
+  }
+}
+.page-editor.active {
+  --border-color: indianred;
+}
+
+.area {
+  position: absolute;
+  display: flex;
+  cursor: pointer;
+}
+.area:not(.active):hover {
+  outline: 1px solid green;
+}
+
+.area > input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.4em;
+  border: none;
+  position: absolute;
+  z-index: 1;
+  margin: 0;
+}
+.area > input:not(:focus) {
+  background-color: transparent;
+  opacity: 0.01;
+}
+
+.area > input:focus {
+  border-color: var(--border-color);
+}
+
+.area.text-area > input {
+  padding: unset;
+  transform: translate(-0.1em, -0.3em);
+}
+
+.area > input.url-input {
+  font-size: 1.1em;
+  opacity: 0.01;
+  color: white;
+  background-color: #666;
+  align-self: center;
+  margin: 6px;
+}
+
+.area > input.url-input:focus {
+  opacity: 1;
+}
+
+.area.image-area > img {
+  position: absolute;
+  top: 0; left: 0;
+  z-index: 0;
+}

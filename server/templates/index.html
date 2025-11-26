@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="StyleSheet" href="{{ url_for('static', filename='page-editor.css') }}">
+  <title>QR Code Label Creator</title>
+  <script>
+    var config = {
+      baseURL: new URL("{{ url_for('static', filename='') }}", document.URL).href,
+    }
+  </script>
+</head>
+<body>
+<header>
+  <h1>QR Code Label Creator</h1>
+
+  <section class="picker">
+    <label>Label Sizes</label>
+    <template-list></template-list>
+    <button class="refresh">↺</button>
+    <span id="message" hidden></span>
+  </section>
+</header>
+
+<main>
+  <layer-stack>
+    <section id="print-preview" title="Print">
+      <canvas id="source-canvas"></canvas>
+    </section>
+    <section id="preview-editor" title="Edit">
+      <page-editor>
+      </page-editor>
+    </section>
+    <section id="image-display" title="Save" hidden>
+      <div>
+        <img id="saved-image"/>
+      </div>
+      <footer>
+        <button id="closeImageBtn" class="print">Close</button>
+      </footer>
+    </section>
+  </layer-stack>
+</main>
+
+<footer>
+  <detail class="instructions" open>
+    <summary>Instructions</summary>
+     <p>Click the QRCode area to edit the URL. A shorter URL will result in a clearer QR Code. </p>
+     <p>Click the label area to edit the label text. Its quite primitive and will just get cut off if its too long.</p>
+     <p class="printable">What you see is what you get. Roughly. The QL-800 is a black and white printer. That's it. No colors, no greyscale. If the printer is online, you can <strong>click the "<span id="print-text-btn">print</span>" button when you are ready to print.</strong></p>
+  </detail>
+
+  <label class="button hidden">Load image<input type="file" id="loadImageBtn" accept="image/png,.png" /></label>
+  <a id="saveImageBtn" class="button">Save Image</a>
+  <button id="printBtn" class="print" disabled>Print to the QL-800</button>
+</footer>
+
+<script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

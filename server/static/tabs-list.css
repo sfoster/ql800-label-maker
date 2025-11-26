@@ -1,0 +1,35 @@
+.tabs {
+  list-style-type: none;
+  margin: 0;
+  padding-inline: 0;
+  display: flex;
+}
+.tabs > li {
+  display: inline-block;
+  margin-inline: 4px;
+  margin-bottom: -1px;
+  padding: 0.2em 0.8em;
+  background-color: white;
+  opacity: 0.5;
+
+  border-radius: 6px;
+  border: 1px solid grey;
+  border-bottom-style: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+
+  cursor: pointer;
+}
+
+.tabs > li.selected {
+  opacity: 1;
+}
+
+.wrapper {
+  padding: 6px;
+  background-color: white;
+  border-radius: 6px;
+  border: 1px solid grey;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
