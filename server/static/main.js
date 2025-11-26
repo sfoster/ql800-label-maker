@@ -13,6 +13,8 @@ const resultCanvas = result.canvas;
   const label_w = 991;
   const label_h = 306;
   const unit = label_h/29; // unit length in mm, if the canvas is 29x90 = 306x991
+  const displayScaleFactor = 0.375;
+  const displayUnit = unit * displayScaleFactor;
   const imageWidth = label_w - unit*31;
   const imageScale = imageWidth / 866;
   const imageHeight = 64 * imageScale;
@@ -22,10 +24,10 @@ const resultCanvas = result.canvas;
   registerPage({
     name: "29x90 label",
     endpoint: "/print/29x90",
-    width: 991, 
-    height: 306, 
-    displayWidth: `${29 * aspectRatio}mm`,
-    displayHeight: `${29 * 1}mm`,
+    width: 991,
+    height: 306,
+    displayWidth: `90mm`,
+    displayHeight: `29mm`,
     baseURL: config.baseURL,
     unit, unitMargin: unit/2,
   }, [
