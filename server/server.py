@@ -8,7 +8,7 @@ from io import BytesIO
 import usb.core
 import usb.util
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
 # Directory to store QR code images
 server_dir = os.path.dirname(os.path.abspath(__file__));

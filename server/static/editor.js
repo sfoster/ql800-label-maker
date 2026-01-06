@@ -1,24 +1,25 @@
 import { LitElement, html } from "./lit-core.min.js"
 
-function areaStyle(area) {
-  return `top: ${area.y}px; left: ${area.x}px; width: ${area.width}px; height: ${area.height}px;`;
+function regionStyle(region) {
+  const regionBox = region.box;
+  return `top: ${regionBox.top}px; left: ${regionBox.left}px; width: ${regionBox.width}px; height: ${regionBox.height}px;`;
 }
 
-export class PageEditor extends LitElement {
+export class TemplateEditor extends LitElement {
   static properties = {
-    page: { default: null },
+    template: { default: null },
     baseURL: { default: null },
   };
 
-  configure(pageData) {
-    this.page = pageData;
-    this.baseURL = pageData.get("baseURL");
-    console.log("PageEditor configured:", pageData, this.baseURL);
+  configure(templateData) {
+    this.template = templateData;
+    this.baseURL = this.ownerDocument.documentURI;
+    console.log("TemplateEditor configured:", templateData, this.baseURL);
   }
 
   shouldUpdate() {
-    if (!this.page || this.baseURL == null) {
-      console.log("Not rendering as we've no page or config data", this.page, this.baseURL);
+    if (!this.template || this.baseURL == null) {
+      console.log("Not rendering as we've no template or config data", this.template, this.baseURL);
       return false;
     }
     return true
@@ -27,24 +28,20 @@ export class PageEditor extends LitElement {
   // Handle form input changes
   handleInputChange(event) {
     const input = event.target;
-    const areaId = input.name;
+    const regionId = input.name;
     const newValue = input.value;
-
-    console.log(`Input changed: ${areaId} = ${newValue}`);
-
-    // Update page model
-    this.page.updateArea({ id: areaId, value: newValue });
-
-    // Canvas re-render happens automatically via page-change event
+    console.log("handleInputChange", regionId);
+    // Update template model
+    this.template.updateRegion({ id: regionId, value: newValue });
   }
 
-  // Handle hover on form fields to highlight preview areas
+  // Handle hover on form fields to highlight preview regions
   handleFormFieldHover(event) {
     const input = event.target;
-    const areaId = input.name;
+    const regionId = input.name;
 
-    // Add highlight class to corresponding preview area
-    this.highlightPreviewArea(areaId);
+    // Add highlight class to corresponding preview region
+    this.highlightPreviewRegion(regionId);
   }
 
   // Handle hover out
@@ -52,56 +49,55 @@ export class PageEditor extends LitElement {
     this.clearHighlights();
   }
 
-  // Highlight preview area
-  highlightPreviewArea(areaId) {
-    const area = this.shadowRoot.querySelector(`[data-area="${areaId}"]`);
-    if (area) {
-      area.classList.add('highlighted');
+  // Highlight preview region
+  highlightPreviewRegion(regionId) {
+    const region = this.shadowRoot.querySelector(`[data-region="${regionId}"]`);
+    if (region) {
+      region.classList.add('highlighted');
     }
   }
 
   // Clear all highlights
   clearHighlights() {
-    this.shadowRoot.querySelectorAll('.preview-area.highlighted').forEach(el => {
+    this.shadowRoot.querySelectorAll('.preview-region.highlighted').forEach(el => {
       el.classList.remove('highlighted');
     });
   }
 
-  // Get user-friendly label for area
-  getAreaLabel(area) {
+  // Get user-friendly label for region
+  getRegionLabel(region) {
     const labels = {
       'qrCode': 'QR Code URL',
       'labelText': 'Label Text',
       'emsLogo': 'Logo Image URL'
     };
-    return labels[area.id] || area.id;
+    return labels[region.id] || region.id;
   }
 
-  // Render preview areas (for hover outlines only)
-  renderPreviewAreas(viewData) {
-    const areas = viewData.areas || [];
-    return areas.map(area => html`
-      <div class="preview-area"
-           data-area="${area.id}"
-           style="${areaStyle(area)}"
-           title="${this.getAreaLabel(area)}">
+  // Render preview regions (for hover outlines only)
+  renderPreviewRegions(viewData, parentRect) {
+    const regions = viewData.regions || [];
+    return Object.values(regions).map(region => html`
+      <div class="preview-region"
+           data-region="${region.id}"
+           style="${regionStyle(region)}"
+           title="${this.getRegionLabel(region)}">
       </div>
     `);
   }
 
   // Render form fields (actual inputs)
   renderFormFields(viewData) {
-    const areas = viewData.areas || [];
-    return areas.map(area => html`
+    const regions = viewData.regions || [];
+    return Object.values(regions).map(region => html`
       <div class="form-field">
-        <label for="input-${area.id}">${this.getAreaLabel(area)}</label>
+        <label for="input-${region.id}">${this.getRegionLabel(region)} (${region.regionType})</label>
         <input
-          id="input-${area.id}"
+          id="input-${region.id}"
           type="text"
-          name="${area.id}"
-          value="${area.value || ''}"
-          placeholder="${area.placeholder || ''}"
-          ?required="${area.required}"
+          name="${region.id}"
+          value="${region.value || ''}"
+          placeholder="${region.placeholder || ''}"
           @change="${this.handleInputChange}"
           @mouseenter="${this.handleFormFieldHover}"
           @mouseleave="${this.handleFormFieldHoverOut}"
@@ -111,20 +107,19 @@ export class PageEditor extends LitElement {
   }
 
   render() {
-    let viewData = Object.fromEntries(this.page);
-    viewData.areas = [...this.page.get("areas").values()];
-
+    let viewData = this.template.properties;
+    let editorCSSURL = new URL("editor.css", this.baseURL);
     return html`
       <link
         rel="stylesheet"
-        href="${this.baseURL}/editor.css"
+        href="${editorCSSURL}"
       />
       <div class="editor-container">
         <!-- Preview section (read-only) -->
         <div class="preview-section">
-          <div class="page-preview"
-               style="width: ${viewData.displayWidth}; height: ${viewData.displayHeight}">
-            ${this.renderPreviewAreas(viewData)}
+          <div class="template-preview"
+               style="width: ${viewData.displayWidth ?? viewData.width}px; height: ${viewData.displayHeight ?? viewData.height}px">
+            ${this.renderPreviewRegions(viewData)}
           </div>
         </div>
 
@@ -141,4 +136,4 @@ export class PageEditor extends LitElement {
     return Array.from(this.shadowRoot.querySelectorAll(".form-field > input")).every(inp => inp.checkValidity());
   }
 }
-customElements.define("page-editor", PageEditor);
+customElements.define("template-editor", TemplateEditor);

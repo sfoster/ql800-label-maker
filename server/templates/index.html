@@ -19,22 +19,24 @@
     <label>Label Sizes</label>
     <template-list></template-list>
     <button class="refresh">↺</button>
-    <span id="message" hidden></span>
+    <span id="message" hidden></span> 
   </section>
 </header>
 
 <main>
   <layer-stack>
-    <section id="print-preview" title="Print">
-      <canvas id="source-canvas"></canvas>
+    <section id="template-instance" title="Template Instance">
     </section>
     <section id="preview-editor" title="Edit">
-      <page-editor>
-      </page-editor>
+      <template-editor>
+      </template-editor>
+    </section>
+    <section id="print-preview" title="Print" hidden>
+      <canvas id="source-canvas"></canvas>
     </section>
     <section id="image-display" title="Save" hidden>
       <div>
-        <img id="saved-image"/>
+        <img id="saved-image"/>                 
       </div>
       <footer>
         <button id="closeImageBtn" class="print">Close</button>

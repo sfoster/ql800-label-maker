@@ -1,80 +1,74 @@
+import { loadImage } from "./helpers.mjs"
+
 function withContext(instructions, ctx) {
   ctx.save();
   instructions(ctx);
   ctx.restore();
 }
 
-function loadImage(src) {
-  let img = new Image();
-  return new Promise((resolve, reject) => {
-    img.onload = () => resolve(img);
-    img.src = src;
-  });
-}
-
-async function drawQRCodeArea(ctx, area) {
+async function drawQRCodeArea(ctx, region) {
   let loadedImage;
-  if (area.value) {
-    const paramsString = `url=${encodeURIComponent(area.value)}`;
+  if (region.value) {
+    const paramsString = `url=${encodeURIComponent(region.value)}`;
     let url = new URL(`/url2qrcode?${paramsString}`, window.config.baseURL);
-    //console.log("drawImageArea", area.value, url);
+    //console.log("drawImageArea", region.value, url);
     loadedImage = await loadImage(url);
   }
   // Draw the QR Code image
   withContext((ctx) => {
-    // console.log("drawQRCodeArea:", area);
-    if ("opacity" in area) {
-        ctx.globalAlpha = area.opacity;
+    // console.log("drawQRCodeArea:", region);
+    if ("opacity" in region) {
+        ctx.globalAlpha = region.opacity;
     }
-    ctx.translate(area.x, area.y);
+    ctx.translate(region.x, region.y);
     if (loadedImage) {
-      ctx.drawImage(loadedImage, 0, 0, area.width, area.height);
+      ctx.drawImage(loadedImage, 0, 0, region.width, region.height);
     } else {
       ctx.fillStyle = "green";
-      ctx.fillRect(0, 0, area.width, area.height);
+      ctx.fillRect(0, 0, region.width, region.height);
     }
     // ctx.lineWidth = 1;
     // ctx.strokeStyle = "magenta";
-    // ctx.strokeRect(0, 0, area.width, area.height);
+    // ctx.strokeRect(0, 0, region.width, region.height);
   }, ctx);
 }
 
-async function drawImageArea(ctx, area) {
+async function drawImageArea(ctx, region) {
   let loadedImage;
-  if (area.value) {
-    let url = new URL(area.value, window.config.baseURL);
+  if (region.value) {
+    let url = new URL(region.value, window.config.baseURL);
     loadedImage = await loadImage(url);
   }
   // Draw the ems-logo image along the bottom
   withContext((ctx) => {
-    // console.log("drawImageArea:", area);
-    if ("opacity" in area) {
-      ctx.globalAlpha = area.opacity;
+    // console.log("drawImageArea:", region);
+    if ("opacity" in region) {
+      ctx.globalAlpha = region.opacity;
     }
-    ctx.translate(area.x, area.y);
+    ctx.translate(region.x, region.y);
     if (loadedImage) {
-      ctx.drawImage(loadedImage, 0, 0, area.width, area.height);
+      ctx.drawImage(loadedImage, 0, 0, region.width, region.height);
     } else {
       ctx.fillStyle = "green";
-      ctx.fillRect(0, 0, area.width, area.height);
+      ctx.fillRect(0, 0, region.width, region.height);
     }
   }, ctx);
 }
 
-async function drawTextArea(ctx, area) {
+async function drawTextArea(ctx, region) {
   withContext((ctx) => {
-    //console.log("drawTextArea:", area);
+    //console.log("drawTextArea:", region);
     let fontSize = 64;
-    ctx.font = `bold ${area.fontSize ?? area.height/2}px 'Liberation Serif'`;
-    let textString = area.value || "";
+    ctx.font = `bold ${region.fontSize ?? region.height/2}px 'Liberation Serif'`;
+    let textString = region.value || "";
     let metrics = ctx.measureText(textString);
     let textHeight = fontSize * 1.2;  // Rough estimate based on font size
 
     console.log(`drawTextArea: textString: ${textString}, textHeight: ${textHeight}`)
-    ctx.translate(area.x, area.y);
+    ctx.translate(region.x, region.y);
     // ctx.lineWidth = 1;
     // ctx.strokeStyle = "magenta";
-    // ctx.strokeRect(0, 0, area.width, textHeight);
+    // ctx.strokeRect(0, 0, region.width, textHeight);
 
     ctx.fillStyle = "black";
     ctx.textAlign = "start";
@@ -88,21 +82,16 @@ export const result = {
   blob: null,
 };
 
-export async function updateCanvas(page) {
-  console.log("updateCanvas with:", page);
+export async function updateCanvas(img, template) {
+  console.log("updateCanvas with:", template);
   let canvas = document.querySelector("#source-canvas");
   let resultCanvas = result.canvas;
-
   let ctx = canvas.getContext("2d");
 
-  let areas = page.get("areas");
-  let width = canvas.width = page.get("width");
-  let height = canvas.height = page.get("height");
-  canvas.style.width = page.get("displayWidth");
-  canvas.style.height = page.get("displayHeight");
-
-  let unit = page.get("unit");
-  let unitMargin = page.get("unitMargin");
+  let width = canvas.width = template.get("width");
+  let height = canvas.height = template.get("height");
+  canvas.style.width = template.get("displayWidth");
+  canvas.style.height = template.get("displayHeight");
 
   resultCanvas.width = canvas.height;
   resultCanvas.height = canvas.width;
@@ -115,34 +104,13 @@ export async function updateCanvas(page) {
   }, ctx);
 
   ctx.filter = 'grayscale(1)';
- // Set the style for the rectangle
-  ctx.strokeStyle = 'black'; // Color of the outline
+  // render the SVG template to the canvas
+  ctx.drawImage(img, 0, 0);
 
-  let areasDrawn = [];
+ // // Set the style for the rectangle
+ //  ctx.strokeStyle = 'black'; // Color of the outline
 
-  for (let [areaId, area] of areas.entries()) {
-    switch (area.type) {
-      case "image":
-        areasDrawn.push(drawImageArea(ctx, area));
-        break;
-      case "qrcode":
-        areasDrawn.push(drawQRCodeArea(ctx, area));
-        break;
-      case "text":
-        areasDrawn.push(drawTextArea(ctx, area));
-        break;
-    }
-  }
-
-  await Promise.all(areasDrawn);
-  // Outline
-  withContext((ctx) => {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "#aaa";
-    ctx.strokeRect(unitMargin, unitMargin, width-unitMargin*2,height-unitMargin*2);
-  }, ctx);
-
-  convertToBlackAndWhite(canvas, 0.6);
+  // convertToBlackAndWhite(canvas, 0.6);
 
   withContext((ctx) => {
     // Rotate the destination canvas context
@@ -155,6 +123,7 @@ export async function updateCanvas(page) {
   }, outputContext);
 
   result.blob = await resultCanvas.convertToBlob();
+  return result;
 };
 
 function convertToBlackAndWhite(canvas, threshold=0.5) {

@@ -1,41 +1,30 @@
 :host {
   --border-color: gainsboro;
-  --highlight-color: indianred;
-  --highlight-bg: rgba(205, 92, 92, 0.1);
+  --highlight-color: mediumspringgreen;
+  --highlight-bg: rgba(0, 204, 92, 0.1);
 }
 
 /* Container layout */
 .editor-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
 }
 
 /* Preview section */
 .preview-section {
-  display: flex;
-  justify-content: center;
-  padding: 1rem;
-  background-color: #f5f5f5;
-  border-radius: 4px;
 }
 
 .page-preview {
   position: relative;
-  border: 1px solid #ccc;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Preview areas (for hover outlines) */
-.preview-area {
+.preview-region {
   position: absolute;
   pointer-events: none;  /* Don't block canvas interaction */
   border: 2px solid transparent;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.preview-area.highlighted {
+.preview-region.highlighted {
   border-color: var(--highlight-color);
   background-color: var(--highlight-bg);
 }

@@ -31,7 +31,6 @@ export class TemplateList extends LitElement {
     this.dispatchEvent(changeEvent);
   }
   render() {
-    console.log("TemplateList, rendering items:", this.items);
     if (!this.items?.length) {
       return html`
         <select disabled style="min-width: 14em">
@@ -43,8 +42,9 @@ export class TemplateList extends LitElement {
     return html`
       <select @change="${this.handleChange}">
       ${this.items.map((item) => {
-        let viewData = Object.fromEntries(item);
-        return html`<option value="${viewData.name}">${viewData.name} (${viewData.height}x${viewData.width})</li>`
+          return html`
+            <option value="${item}">${item}</li>
+          `;
       })}
       </select>
     `;
