@@ -1,4 +1,3 @@
-// Import something from page.mjs
 import { templateMap, SVGTemplateLoader } from "./templates.js";
 import { ImageRegion, StringRegion } from "./template-regions.mjs"
 import { TemplateEditor } from "./editor.js";
@@ -69,11 +68,10 @@ export const App = new (class _App {
         }
         if (event.target == this.printButton) {
           const dryRun = location.search.toLowerCase().includes("dryrun");
-          const currentPage = getCurrentPage();
-          if (!currentPage) {
+          if (!this.templateInstance) {
             return;
           }
-          sendBlob(result.blob, currentPage.get("endpoint"), dryRun);
+          sendBlob(result.blob, this.templateInstance.get("endpoint"), dryRun);
           break;
         }
         if (event.target == this.saveImageButton) {
