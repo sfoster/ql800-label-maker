@@ -33,7 +33,8 @@ def get_brother_ql_printers():
                     "name": product,
                     "manufacturer": manufacturer,
                     "serial": serial_number,
-                    "description": description
+                    "description": description,
+                    "endpoint": "/print",
                 })
             except Exception as e:
                 print(f"Error accessing device details: {e}")
@@ -50,13 +51,15 @@ def home():
 def url2qrcode():
     # Retrieve the URL parameter from the query string
     url = request.args.get('url', None)
+    border_width = request.args.get('border', 4)
+    box_size = request.args.get('box', 10)
     print(f"url2qrcode, got url {url}")
     # Check if the URL parameter is provided
     if not url:
         return "No URL provided", 400
 
     # Create a unique filename based on the URL
-    filename = hashlib.md5(url.encode()).hexdigest() + '.png'
+    filename = hashlib.md5(f"{url},border={border_width},box={box_size}".encode()).hexdigest() + '.png'
     filepath = os.path.join(QR_CODE_DIR, filename)
 
     # Check if the QR code already exists
@@ -64,9 +67,9 @@ def url2qrcode():
         # Generate the QR code
         qr = qrcode.QRCode(
             version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=box_size,
+            border=border_width,
         )
         qr.add_data(url)
         qr.make(fit=True)

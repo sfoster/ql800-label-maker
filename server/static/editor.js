@@ -14,7 +14,6 @@ export class TemplateEditor extends LitElement {
   configure(templateData) {
     this.template = templateData;
     this.baseURL = this.ownerDocument.documentURI;
-    console.log("TemplateEditor configured:", templateData, this.baseURL);
   }
 
   shouldUpdate() {
@@ -30,7 +29,6 @@ export class TemplateEditor extends LitElement {
     const input = event.target;
     const regionId = input.name;
     const newValue = input.value;
-    console.log("handleInputChange", regionId);
     // Update template model
     this.template.updateRegion({ id: regionId, value: newValue });
   }

@@ -98,7 +98,8 @@ footer :is(button, a.button).primary {
   background-color: limegreen;
 }
 
-footer :is(button, a.button):disabled {
+footer button:disabled,
+footer a.button[disabled] {
   background-color: whitesmoke;
   color: dimgrey;
   border: 2px solid slategrey;
@@ -108,10 +109,6 @@ footer :is(button, a.button):disabled {
 
 footer :is(button, a.button):hover {
   opacity: 1;
-}
-footer :is(button, a.button):not(disabled):active {
-  opacity: 1;
-  border: inset 2px;
 }
 
 .instructions {

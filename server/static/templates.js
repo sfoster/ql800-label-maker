@@ -1,4 +1,4 @@
-import { ImageRegion, StringRegion, ComposedRegion } from "./template-regions.mjs"
+import { ImageRegion, QRCodeImageRegion, StringRegion, ComposedRegion } from "./template-regions.mjs"
 
 export const templateMap = new Map();
 
@@ -85,6 +85,17 @@ export class SVGTemplateLoader {
           region.value = initialValue;
           break;
         }
+        case "qrcode-image": {
+          let initialValue = regionElem.getAttribute("xlink:href");
+          Object.assign(regionData.properties, {
+              fieldType: "image",
+              presentationType: "edit-image-url",
+              initialValue
+          });
+          region = new QRCodeImageRegion(regionData);
+          region.value = initialValue;
+          break;
+        }
       }
       this.templateRegions[region.id] = region;
       region.addEventListener("value-change", this);
@@ -101,6 +112,7 @@ export class SVGTemplateLoader {
         height,
       }
     });
+    this.currentTemplate.sourceData = { ...templateData };
     this.currentTemplate.addEventListener("change", (event) => {
       console.log("change event:", event);
     });
@@ -113,7 +125,6 @@ export class SVGTemplateLoader {
     this.#templateLoaded = false;
   }
   handleEvent(event) {
-    console.log("SVGTemplateLoader got event:", event);
     if (event.type == "value-change") {
       const region = event.target;
       this.updateTemplateRegion(region);
@@ -121,21 +132,24 @@ export class SVGTemplateLoader {
   }
   updateTemplateRegion(region) {
     let elem = this.svgTemplateElem.querySelector(`#${region.id}`);
-    console.log("updateTemplateRegion:", region.id, region.regionType);
     switch (region.regionType) {
     case "text":
       // this is a HTML element, just update its textContent property
       elem.textContent = region.value;
       break;
     case "image":
-      elem.setAttributeNS('http://www.w3.org/1999/xlink', 'href', region.value);
-      // elem.setAttribute("xlink:href", region.value);
+      region.loaded.then(() => elem.setAttributeNS('http://www.w3.org/1999/xlink', 'href', region.imageURL))
+      break;
+    case "qrcode-image":
+      region.loaded.then(() => {
+        elem.setAttributeNS('http://www.w3.org/1999/xlink', 'href', region.imageURL);
+      })
       break;
     default:
       console.warn(`Unknown region type: ${regionType} for region: ${region.id}`, elem);
       return;
     }
-    Emitter.scheduleNotify(this.currentTemplate.id);
+    Emitter.scheduleNotify(this.currentTemplate.id, region);
   }
 };
 
@@ -143,10 +157,11 @@ const Emitter = new class _Emitter {
   constructor() {
     this._scheduled = {};
   }
-  scheduleNotify(name) {
+  scheduleNotify(name, target) {
     if (!this._scheduled[name]) {
       this._scheduled[name] = true;
-      Promise.resolve().then(() => {
+      const loadedPromise = target.loaded ?? Promise.resolve();
+      loadedPromise.then(() => {
         delete this._scheduled[name];
         const changeEvent = new CustomEvent('page-change', { detail: name });
         console.log("scheduleNotify, dispatchEvent for name:", name, changeEvent);

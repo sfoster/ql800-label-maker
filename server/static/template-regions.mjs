@@ -1,4 +1,4 @@
-import { loadImage } from "./helpers.mjs"
+import { loadImage, imageUrlToDataURI } from "./helpers.mjs"
 
 class _Region extends EventTarget {
   constructor(region = {}) {
@@ -39,35 +39,77 @@ export class ComposedRegion extends _Region {
     }
     return idValues;
   }
+  get title() {
+    let textRegion = Object.values(this.properties.regions).find(region => region.regionType == "text");
+    let titleText = "";
+    if (textRegion) {
+      titleText = `${textRegion.value} (${this.id})`;
+    } 
+    return titleText;
+  }
   updateRegion({id, value}) {
-    console.log("updateRegion", id);
     let region = this.properties.regions[id];
     region.updateValue(value);
   }
 }
 
 export class ImageRegion extends _Region {
+  imageURL = "";
   constructor(region = {}) {
     super(region);
     if (region._value) {
       this._value = region._value;
-      this._loadedPromise = loadImage(value);
+      this.loadImageURL(value);
     }
   }
-  get url() { return this._value || ""}
+  resolveStringToURL(strURL) {
+    let imageURL = new URL(strURL, this.baseURL);
+    return imageURL.toString();
+  }
+  get url() { 
+    if (!this._value) return ""; 
+    return this.resolveStringToURL(this._value);
+  }
   set url(value) { 
     this._value = value;
   }
+  loadImageURL(url) {
+    this._loadedPromise = imageUrlToDataURI(url).then(dataUri => {
+      this.imageURL = dataUri;
+      return loadImage(dataUri);
+    });
+  }
   updateValue(value) {
-    console.log("updateValue:", this.id);
-    let url = new URL(value, this.baseURL);
-    this._loadedPromise = loadImage(url);
-    super.updateValue(url);
+    const url = this.resolveStringToURL(value);
+    this.loadImageURL(url);
+    // could dispatch with a loading image?
+    this.loaded.then(() => {
+      super.updateValue(value);
+    })
   }
   get loaded() {
     return this._loadedPromise ?? Promise.resolve();
   }
 }
+
+export class QRCodeImageRegion extends ImageRegion {
+  resolveStringToURL(strURL) {
+    let imageURL = new URL(strURL, this.baseURL);
+    // pass through data: URIs, and URLs that already point at our QRCode endpoint
+    if (
+      !imageURL.protocol.startsWith("http") ||
+      imageURL.toString().includes("/url2qrcode")
+    ) {
+      return imageURL.toString();
+    }
+    const params = new URLSearchParams();
+    params.append("url", strURL);
+    params.append("border", "0");
+    params.append("box", "12");
+    return (new URL(`/url2qrcode?${params}`, this.baseURL)).toString();
+  }
+}
+
 
 export class StringRegion extends _Region {
   constructor(region = {}) {
