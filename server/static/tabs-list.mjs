@@ -1,11 +1,12 @@
 import { LitElement, html } from "./lit-core.min.js"
+import { getBaseURL } from "./config.mjs"
 
 export class TabsList extends LitElement {
   static properties = {
     selectedIndex: { default: 0 },
   };
   get baseURL() {
-    return window.config.baseURL;
+    return getBaseURL();
   }
   get tabs() {
     return [...this.children].map((elem, index) => {

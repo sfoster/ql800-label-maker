@@ -1,10 +1,11 @@
-import { templateMap, SVGTemplateLoader } from "./templates.js";
+import { templateMap, SVGTemplateLoader } from "./templates.mjs";
 import { ImageRegion, QRCodeImageRegion, StringRegion } from "./template-regions.mjs"
-import { TemplateEditor } from "./editor.js";
-import { LayerStack } from "./stack.js";
-import { TemplateList } from "./template-list.js";
-import { updateCanvas } from "./page-canvas.js";
+import { TemplateEditor } from "./editor.mjs";
+import { LayerStack } from "./stack.mjs";
+import { TemplateList } from "./template-list.mjs";
+import { updateCanvas } from "./page-canvas.mjs";
 import { loadImage, sanitizeFilename } from "./helpers.mjs";
+import { getDeviceList, sendBlob } from "./api.mjs";
 
 const blankImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 
@@ -165,52 +166,9 @@ export const App = new (class _App {
   }
 
 });
-window.App = App;
 
-window.getDeviceList = function getDeviceList() {
-  // POST the FormData to the server using Fetch API
-  return fetch(window.location.origin + '/devices', {
-      method: 'GET',
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log("/devices got result:", data);
-      return data.result;
-  })
-  .catch(error => {
-      console.error('Error:', error);
-  });
+// Expose App for browser console debugging
+// Usage: __app.updateUI(), __app.templateInstance, etc.
+if (typeof window !== 'undefined') {
+  window.__app = App;
 }
-
-// Function to save canvas as an image
-function sendBlob(blob, endpoint, dryRun=false) {
-  if (!endpoint) {
-    console.warn("sendBlob, no endpoint given");
-    return;
-  }
-  const formData = new FormData();
-  if (dryRun) {
-    formData.set("dryrun", true);
-  }
-  formData.append('image', blob, 'canvas-image.png');
-  console.log("sendBlob, sending request to:", window.location.origin + endpoint);
-
-  // POST the FormData to the server using Fetch API
-  fetch(window.location.origin + endpoint, {
-      method: 'POST',
-      body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-      console.log('Success:', data);
-  })
-  .catch(error => {
-      console.error('Error:', error);
-  });
-}
-
-
-document.querySelector("#loadImageBtn").addEventListener('change', (event) => {
-  const [file] = event.target.files;
-  console.log("file", file);
-});

@@ -1,8 +1,9 @@
 import { LitElement, html } from "./lit-core.min.js"
+import { getBaseURL } from "./config.mjs"
 
 export class LayerStack extends HTMLElement {
   get baseURL() {
-    return window.config.baseURL;
+    return getBaseURL();
   }
   get layers() {
     return [...this.children].map((elem, index) => {

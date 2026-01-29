@@ -1,4 +1,5 @@
 import { loadImage, imageUrlToDataURI } from "./helpers.mjs"
+import { getBaseURL } from "./config.mjs"
 
 class _Region extends EventTarget {
   constructor(region = {}) {
@@ -8,7 +9,7 @@ class _Region extends EventTarget {
     this.regionType = region.regionType;
     this.properties = { ...region.properties };
     this.originalProperties = { ...region.properties };
-    this.baseURL = region.baseURL || (window.config.baseURL ?? window.location.href);
+    this.baseURL = region.baseURL || getBaseURL();
   }
   get (propName) {
     return this.properties[propName];

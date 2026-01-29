@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="StyleSheet" href="{{ url_for('static', filename='page-editor.css') }}">
   <title>QR Code Label Creator</title>
-  <script>
-    var config = {
+  <script type="module">
+    import { initConfig } from "{{ url_for('static', filename='config.mjs') }}";
+
+    initConfig({
       baseURL: new URL("{{ url_for('static', filename='') }}", document.URL).href,
-    }
+    });
   </script>
 </head>
 <body>
@@ -58,6 +60,6 @@
   <button id="printBtn" class="print" disabled>Print to the QL-800</button>
 </footer>
 
-<script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='main.mjs') }}"></script>
 </body>
 </html>
