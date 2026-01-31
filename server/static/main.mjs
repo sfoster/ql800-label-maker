@@ -38,6 +38,12 @@ export const App = new (class _App {
       svgURL: "./label-templates/29x90-image-label-html-text.svg",
       label: "29x90 (QRCode, label, ems logo)",
     });
+    templateMap.set("ems-17x54-2line", {
+      id: "ems-17x54-2line",
+      sizeId: "17x54",
+      svgURL: "./label-templates/17x54-image-label-html-text.svg",
+      label: "17x54 (QRCode, label)",
+    });
     console.log("configureAvailableTemplates", templateMap);
   }
   async start() {
@@ -59,7 +65,7 @@ export const App = new (class _App {
   handleEvent(event) {
     switch (event.type) {
       case "template-change": {
-        this.loadSelectedTemplate(optionsElem.value);
+        this.loadSelectedTemplate(this.optionsElem.value);
         break;
       }
       case "page-change": {

@@ -1,0 +1,38 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  xml:space="preserve" width="566" height="165"
+  data-template-name="17x54">
+  <style>
+    .textbox { 
+      display:flex;
+      flex-direction:row;
+      align-items: center;
+      justify-content: center; 
+    }
+    .textbox > * {
+      flex:1;
+      font-size:36px;
+      font-weight:600;
+      line-height:1.08;
+      text-align:start;
+      letter-spacing:0;
+    }
+  </style>
+  <rect x="10" y="10" width="546" height="145" stroke="#666" rx="6" ry="6" fill="#fff" style="stroke-width: 2px;"></rect>
+  <image id="qrcode-image" data-region-type="qrcode-image" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAABHNCSVQICAgIfAhkiAAABOFJREFU eJzt3VFu7DgMBEDPYu5/5ewFogZoSCadV/Wbge140hBCUNTnuq6f6wV+fn5/zM/n03L91eer0vOf vkf1+tV3ffo7e8J/3Q8AkwkIBAICgYBAICAQfFc/2FVBqeqqSu2y8/qn38Wu60x7zqr0/FYQCAQE AgGBQEAgEBAIllWslbdXLFaqv1e1v+lOP9S/2Pv0m86/OSsIBAICgYBAICAQCAgE5SrWNKd3Ak7s 3TrdW7VyenflRFYQCAQEAgGBQEAgEBAIXl/FqtrV3/SErp2Aq893zQ7rZAWBQEAgEBAIBAQCAYGg XMWaVpno2nXXWQ3bVTXq6umadv3ECgKBgEAgIBAICAQCAsGyivX2WUq7+oZ2fX5l4hmFT8z8qlyn kxUEAgGBQEAgEBAIBASC77Teqmk6d9G9/bzGlTf9zVlBIBAQCAQEAgGBQEAgGHdG4V+dsbTz9+o6 T3HldJWss6fLCgKBgEAgIBAICAQCAsHnp1giON2/85Zq1ROVnmnvoqsaVqWKBQ8REAgEBAIBgUBA IPhc1/Vr6WBX/8u02UhdlZKd/Upd86m6vsuu+WDXZQWBSEAgEBAIBAQCAYGgPN296zy6rinrq+t3 9h+d/m66ql5VT8z1soJAICAQCAgEAgKBgECwrRdreYOXTBB/y3PeMe3sv66ZaHqxYDMBgUBAIBAQ CAQEgm3T3auVhq4+nWpv1en73rnWLtN2Gp7ub7tzfSsIBAICgYBAICAQCAgE366eq67J31WnK0k7 p7vveta3nGn4RBXOCgKBgEAgIBAICAQCAsHyjMJdlYy3VJ/eNLm8c7L8juufftc7r28FgUBAIBAQ CAQEAgGB4Hu6h6rqLbvodt23c2bVW2aHrTxRUbWCQCAgEAgIBAICgYBAICAQLJsVyxca1vh2uqGv 83iIaVtWd+lqbE2sIBAICAQCAoGAQCAgEJSrWKerSStdzX5dFaNk4oC1kzq3f1tBIBAQCAQEAgGB QEAgWB7iebqS8ZY+oGlD2p64d1dFsuqJd2oFgUBAIBAQCAQEAgGBYFnFWpk20r7reaom7pY7vXtz 2pC+O/e1gkAgIBAICAQCAoGAQPC5rqv0L39X5WNaZaVrflcybefgxJliVVYQCAQEAgGBQEAgEBAI llWsrkrGtF6v09JzTuvf6nqnnX1yVhAIBAQCAYFAQCAQEAjKVazOSdsnn2elc7r7E71Gv+n6Lqv0 YkEzAYFAQCAQEAgEBILyXKyu/prTlZJpVa+d96h+vvqs06ptK3ee0woCgYBAICAQCAgEAgLBt6s6 9BZvOa9vp87+s8p9n6gwWkEgEBAIBAQCAYFAQCAoT3fvMu3MwU5dlbWucyU7z7O0gkAgIBAICAQC AoGAQLDcUfiXZx3t0Hke4OmqTleVqWrX8+jFgpsEBAIBgUBAIBAQCMpzsabtpOs603DXe7hznbfs Ap02L8tcLNhMQCAQEAgEBAIBgaBcxXqLanVr4nyqXb1SK11nEU6rMNpRCDcJCAQCAoGAQCAgEPzZ KtZber3SdU7vBKw63X9WrTA+sZPRCgKBgEAgIBAICAQCAsFyuvu0uVhvn+6+c/7VxL6xitPVp53v zQoCgYBAICAQCAgEAgKBMwo366wwnZ7Kvsu03jA7CuEmAYFAQCAQEAgEBAIBgeB/qgm9onHk6n0A AAAASUVORK5CYII=" width="120" height="120" x="24" y="24" preserveAspectRatio="none"/>
+  <g inkscape:groupmode="layer" id="template-label-placeholder" inkscape:label="inkscape placeholder label text" style="display:none">
+    <text x="166" y="10" width="380" height="156" class="textbox">
+      The label text goes here.
+    </text>
+  </g>
+  <rect x="160" y="24" width="380" height="120" fill="#fff"></rect>
+  <foreignObject x="160" y="20" width="380" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="textbox" style="height:120px;">
+      <div xmlns="http://www.w3.org/1999/xhtml" id="label-text" data-region-type="text" data-region-wrapper=".textbox">
+        Short label of text<br/>goeshere see
+      </div>
+    </div>
+  </foreignObject>
+</svg>
