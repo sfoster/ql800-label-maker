@@ -50,7 +50,7 @@ export class SVGTemplateLoader {
       let rect = boxElem.getBoundingClientRect();
       let {regionType} = regionElem.dataset;
       let regionData = {
-          label: regionElem.id,
+          label: regionElem.getAttribute("data-region-label") || regionElem.id,
           id: regionElem.id,
           regionType, 
           properties: {

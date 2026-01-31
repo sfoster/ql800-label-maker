@@ -33,6 +33,51 @@ export class TemplateEditor extends LitElement {
     this.template.updateRegion({ id: regionId, value: newValue });
   }
 
+  // Handle file drop for image regions
+  async handleFileDrop(event, regionId) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const dropZone = event.currentTarget;
+    dropZone.classList.remove('drag-over');
+
+    const files = event.dataTransfer.files;
+    if (files.length === 0) return;
+
+    const file = files[0];
+    if (!file.type.startsWith('image/')) {
+      console.warn('Dropped file is not an image');
+      return;
+    }
+
+    // Convert file to data URI
+    const dataUri = await this.fileToDataURI(file);
+
+    // Update template model
+    this.template.updateRegion({ id: regionId, value: dataUri });
+  }
+
+  // Convert file to data URI
+  fileToDataURI(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Handle drag over to allow drop
+  handleDragOver(event) {
+    event.preventDefault();
+    event.currentTarget.classList.add('drag-over');
+  }
+
+  // Handle drag leave
+  handleDragLeave(event) {
+    event.currentTarget.classList.remove('drag-over');
+  }
+
   // Handle hover on form fields to highlight preview regions
   handleFormFieldHover(event) {
     const input = event.target;
@@ -64,12 +109,78 @@ export class TemplateEditor extends LitElement {
 
   // Get user-friendly label for region
   getRegionLabel(region) {
-    const labels = {
+    const labelDefaults = {
       'qrCode': 'QR Code URL',
+      'image': 'Image',
       'labelText': 'Label Text',
       'emsLogo': 'Logo Image URL'
     };
-    return labels[region.id] || region.id;
+    return region.labelText || labelDefaults[region.id] || region.id;
+  }
+
+  // Render appropriate editor based on region type
+  renderRegionEditor(region) {
+    // Check if region is an image type (image or qrcode)
+    if (region.regionType === 'image' || region.regionType === 'qrcode') {
+      return this.renderImageEditor(region);
+    }
+    // Default to text editor for string regions
+    return this.renderTextEditor(region);
+  }
+
+  // Render image editor with drag-and-drop support
+  renderImageEditor(region) {
+    return html`
+      <div class="form-field image-field">
+        <label for="input-${region.id}">${this.getRegionLabel(region)}</label>
+        <div class="image-editor">
+          <div
+            class="drop-zone"
+            @drop="${(e) => this.handleFileDrop(e, region.id)}"
+            @dragover="${this.handleDragOver}"
+            @dragleave="${this.handleDragLeave}"
+            @mouseenter="${this.handleFormFieldHover}"
+            @mouseleave="${this.handleFormFieldHoverOut}"
+          >
+            <div class="drop-zone-text">
+              <span class="drop-icon">📁</span>
+              <span>Drop image here</span>
+            </div>
+          </div>
+          <div class="url-input-wrapper">
+            <input
+              id="input-${region.id}"
+              type="text"
+              name="${region.id}"
+              value="${region.value || ''}"
+              placeholder="${region.placeholder || 'Or enter URL / data URI'}"
+              @change="${this.handleInputChange}"
+              @mouseenter="${this.handleFormFieldHover}"
+              @mouseleave="${this.handleFormFieldHoverOut}"
+            >
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Render simple text editor
+  renderTextEditor(region) {
+    return html`
+      <div class="form-field">
+        <label for="input-${region.id}">${this.getRegionLabel(region)}</label>
+        <input
+          id="input-${region.id}"
+          type="text"
+          name="${region.id}"
+          value="${region.value || ''}"
+          placeholder="${region.placeholder || ''}"
+          @change="${this.handleInputChange}"
+          @mouseenter="${this.handleFormFieldHover}"
+          @mouseleave="${this.handleFormFieldHoverOut}"
+        >
+      </div>
+    `;
   }
 
   // Render preview regions (for hover outlines only)
@@ -87,21 +198,7 @@ export class TemplateEditor extends LitElement {
   // Render form fields (actual inputs)
   renderFormFields(viewData) {
     const regions = viewData.regions || [];
-    return Object.values(regions).map(region => html`
-      <div class="form-field">
-        <label for="input-${region.id}">${this.getRegionLabel(region)} (${region.regionType})</label>
-        <input
-          id="input-${region.id}"
-          type="text"
-          name="${region.id}"
-          value="${region.value || ''}"
-          placeholder="${region.placeholder || ''}"
-          @change="${this.handleInputChange}"
-          @mouseenter="${this.handleFormFieldHover}"
-          @mouseleave="${this.handleFormFieldHoverOut}"
-        >
-      </div>
-    `);
+    return Object.values(regions).map(region => this.renderRegionEditor(region));
   }
 
   render() {

@@ -83,3 +83,70 @@
   color: #999;
   font-style: italic;
 }
+
+/* Image editor with drag-and-drop */
+.image-field {
+  margin-bottom: 1.5rem;
+}
+
+.image-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.drop-zone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  background-color: #fafafa;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.drop-zone:hover {
+  border-color: #999;
+  background-color: #f0f0f0;
+}
+
+.drop-zone.drag-over {
+  border-color: var(--highlight-color);
+  background-color: var(--highlight-bg);
+}
+
+.drop-zone-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.drop-icon {
+  font-size: 2rem;
+}
+
+.url-input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.url-input-wrapper input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.url-input-wrapper input:hover {
+  border-color: #999;
+}
+
+.url-input-wrapper input:focus {
+  outline: none;
+  border-color: var(--highlight-color);
+  box-shadow: 0 0 0 3px var(--highlight-bg);
+}

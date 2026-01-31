@@ -32,8 +32,14 @@ export const App = new (class _App {
     // TODO: load these from some .json file
     // And key them on the capabilities of the printer
     // Or let the user tell us what size labels it has loaded
-    templateMap.set("ems-29x90-2line", {
-      id: "ems-29x90-2line",
+    templateMap.set("ems-29x90-qrcode", {
+      id: "ems-29x90-qrcode",
+      sizeId: "29x90",
+      svgURL: "./label-templates/29x90-qrcode-label-html-text.svg",
+      label: "29x90 (QRCode, label, ems logo)",
+    });
+    templateMap.set("29x90-image-2line", {
+      id: "29x90-image-2line",
       sizeId: "29x90",
       svgURL: "./label-templates/29x90-image-label-html-text.svg",
       label: "29x90 (QRCode, label, ems logo)",
