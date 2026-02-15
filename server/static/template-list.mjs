@@ -2,7 +2,7 @@ import { LitElement, html } from "./lit-core.min.js"
 
 export class TemplateList extends LitElement {
   static properties = {
-    items: {}
+    items: {},
   };
   get picker() {
     return this.shadowRoot.querySelector("select");
@@ -19,11 +19,14 @@ export class TemplateList extends LitElement {
     return this.picker?.value;
   }
   set value(newValue) {
-    if (this.picker) {
+    if (this.picker && this.items.length) {
+      console.log("TemplateList update value: ", newValue, this.picker.options);
       this.picker.value = newValue;
     }
+    console.log("/TemplateList update value: ", this.value);
   }
   handleChange(event) {
+    console.log("TemplateList handleChange");
     const changeEvent = new CustomEvent('template-change', {
       bubbles: true,
       composed: true  // This is important for crossing the shadow boundary
@@ -33,7 +36,7 @@ export class TemplateList extends LitElement {
   render() {
     if (!this.items?.length) {
       return html`
-        <select disabled style="min-width: 14em">
+        <select style="min-width: 14em">
           <option value="">No items</option>
         </select>
       `;

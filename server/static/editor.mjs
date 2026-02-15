@@ -18,7 +18,7 @@ export class TemplateEditor extends LitElement {
 
   shouldUpdate() {
     if (!this.template || this.baseURL == null) {
-      console.log("Not rendering as we've no template or config data", this.template, this.baseURL);
+      console.log("Not rendering as we've no template or config data yet", this.template, this.baseURL);
       return false;
     }
     return true

@@ -12,11 +12,14 @@ const blankImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAA
 export const App = new (class _App {
   constructor() {
     this.devices = [];
-    if (document.readyState == "complete") {
-      this.start();
-    } else {
-      document.addEventListener("DOMContentLoaded", () => this.start(), { once: true });
-    }
+    this.startParams = null;
+    this.readyPromise = new Promise((resolve, reject) => {
+      if (document.readyState == "complete") {
+        resolve();
+      } else {
+        document.addEventListener("DOMContentLoaded", () => resolve(), { once: true });
+      }
+    });
   }
   get hasImage() {
     return !!this._resultObjectURL;
@@ -52,7 +55,10 @@ export const App = new (class _App {
     });
     console.log("configureAvailableTemplates", templateMap);
   }
-  async start() {
+  async start(params) {
+    if (params) {
+      this.startParams = params;
+    }
     this.templateLoader = new SVGTemplateLoader(document.getElementById("template-instance"));
     this.editorElem = document.querySelector("template-editor");
     this.optionsElem = document.querySelector("template-list");
@@ -158,11 +164,18 @@ export const App = new (class _App {
       document.getElementById("message").hidden = false;
     }
     this.configureAvailableTemplates();
+    let templateId = this.startParams?.get("template");
+    if (templateId && !templateMap.has(templateId)) {
+      templateId = "";
+    }
     this.optionsElem.items = [...templateMap.keys()];
+    await this.optionsElem.updateComplete;
+    if (templateId) {
+      this.optionsElem.value = templateId;
+    }
     await new Promise(resolve => requestAnimationFrame(resolve));
-    let id = this.optionsElem.value;
-    if (id) {
-      this.loadSelectedTemplate(id);
+    if (templateId) {
+      this.loadSelectedTemplate(templateId);
     }
     this.updateEditor();
   }
@@ -183,4 +196,9 @@ export const App = new (class _App {
 // Usage: __app.updateUI(), __app.templateInstance, etc.
 if (typeof window !== 'undefined') {
   window.__app = App;
+
+  App.readyPromise.then(async () => {
+    const qsParams = new URLSearchParams(location.search);
+    await App.start(qsParams);
+  });
 }
