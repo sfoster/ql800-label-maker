@@ -13,6 +13,8 @@ export const App = new (class _App {
   constructor() {
     this.devices = [];
     this.startParams = null;
+    this.isStarting = true;
+    this.editorReady = false;
     this.readyPromise = new Promise((resolve, reject) => {
       if (document.readyState == "complete") {
         resolve();
@@ -153,6 +155,7 @@ export const App = new (class _App {
   }
 
   async updateUI() {
+    this.editorReady = false;
     this.devices = await getDeviceList();
     console.log("Got devices:", this.devices);
     if (this.devices.length) {
@@ -164,20 +167,23 @@ export const App = new (class _App {
       document.getElementById("message").hidden = false;
     }
     this.configureAvailableTemplates();
-    let templateId = this.startParams?.get("template");
-    if (templateId && !templateMap.has(templateId)) {
-      templateId = "";
+
+    let templateId;
+    if (this.isStarting) {
+      if (this.startParams?.has("template") && templateMap.has(this.startParams.get("template"))) {
+        templateId = this.startParams.get("template");
+      }
     }
     this.optionsElem.items = [...templateMap.keys()];
     await this.optionsElem.updateComplete;
-    if (templateId) {
-      this.optionsElem.value = templateId;
-    }
+
+    this.optionsElem.value = templateId || this.optionsElem.value;
     await new Promise(resolve => requestAnimationFrame(resolve));
     if (templateId) {
       this.loadSelectedTemplate(templateId);
     }
     this.updateEditor();
+    this.editorReady = true;
   }
 
   async updateEditor() {

@@ -20,10 +20,8 @@ export class TemplateList extends LitElement {
   }
   set value(newValue) {
     if (this.picker && this.items.length) {
-      console.log("TemplateList update value: ", newValue, this.picker.options);
       this.picker.value = newValue;
     }
-    console.log("/TemplateList update value: ", this.value);
   }
   handleChange(event) {
     console.log("TemplateList handleChange");
