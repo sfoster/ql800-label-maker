@@ -22,6 +22,8 @@ import { parse } from 'csv-parse/sync';
 
 const SERVER_URL = 'http://localhost:5000';
 
+let templateRegionIds = [];
+
 // Parse command line arguments
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -81,6 +83,17 @@ Example:
   return options;
 }
 
+// map template regions to spreadsheet column names
+function getColumnNameForTemplateRegionId(regionId) {
+  switch (regionId) {
+    case "qrcode-image":
+      return "Inventory URL";
+    case "label-text":
+      return "Name";
+  }
+  // return undefined for unknown regionId
+}
+
 // Load and parse CSV file
 async function loadCSV(filepath) {
   const content = await fs.readFile(filepath, 'utf-8');
@@ -92,25 +105,44 @@ async function loadCSV(filepath) {
   return records;
 }
 
+function getTemplateRegionValuesFromRowData(rowData, labelIndex) {
+  // gather up the values for each region in the template
+  const templateValues = {};
+  console.log(`getting values for template regions: ${templateRegionIds.join(", ")}, using rowData: ${JSON.stringify(rowData)}`);
+  for (let id of templateRegionIds) {
+    let col = getColumnNameForTemplateRegionId(id);
+    let val = rowData[col];
+    if (!val) {
+      // Abort on an empty string (any empty cells in the spreadsheet/csv)
+      // TODO: Maybe add a required-ness thing to the template? Its ok to print without
+      // label text, but for the qrcode labels, it makes no sense to not have the URL 
+      throw new Error(`Missing data in column: ${col} (template region id: ${id})`);
+    }
+    templateValues[id] = val;
+  }
+  return templateValues;
+}
+
 // Generate a single label
 async function generateLabel(page, rowData, index) {
   console.log(`  📄 Label ${index + 1}...`);
+  const templateValues = getTemplateRegionValuesFromRowData(rowData, index);
 
   // Update all regions from CSV data
   await page.evaluate(async (data) => {
     const app = window.__app;
+
+    // populate the form and generate the label image
     for (let [id, val] of Object.entries(data)) {
-      if (app.templateInstance?.properties?.regions[id]) {
-        // Set up listener for label-ready BEFORE making changes
-        const labelReadyPromise = new Promise((resolve) => {
-          document.addEventListener('label-ready', resolve, { once: true });
-        });
-        app.templateInstance.updateRegion({ id, value: val });
-        // Wait for label-ready event
-        await labelReadyPromise;
-      }
+      // Set up listener for label-ready BEFORE making changes
+      const labelReadyPromise = new Promise((resolve) => {
+        document.addEventListener('label-ready', resolve, { once: true });
+      });
+      app.templateInstance.updateRegion({ id, value: val });
+      // Wait for label-ready event
+      await labelReadyPromise;
     }
-  }, rowData);
+  }, templateValues);
 
 
   // Extract PNG as base64
@@ -162,7 +194,6 @@ async function main() {
   const columns = Object.keys(records[0]);
   console.log('📊 CSV columns (will map to template regions):');
   columns.forEach(col => console.log(`  - ${col}`));
-  console.log();
 
   // Create output directory
   await fs.mkdir(options.output, { recursive: true });
@@ -199,18 +230,18 @@ async function main() {
 
   // Verify template regions match CSV columns
   console.log('🔍 Verifying template regions...');
-  const availableRegions = await page.evaluate(() => {
-    const template = window.__app.templateInstance;
-    if (!template?.properties?.regions) return [];
-    return Object.keys(template.properties.regions);
+  templateRegionIds = await page.evaluate(() => {
+    return Object.keys(window.__app.templateLoader.templateRegions);
   });
 
-  console.log('  Available regions:', availableRegions.join(', '));
+  console.log('  Template regions:', templateRegionIds.join(', '));
 
-  const unmatchedColumns = columns.filter(col => !availableRegions.includes(col));
-  if (unmatchedColumns.length > 0) {
-    console.log('  ⚠️  CSV columns not found in template:', unmatchedColumns.join(', '));
-    console.log('     These columns will be ignored.\n');
+  const columnNames = templateRegionIds.filter(id => getColumnNameForTemplateRegionId(id));
+  const unmatchedRegions = columnNames.filter(id => columns.includes(id));
+  if (unmatchedRegions.length > 0) {
+    console.log('  ⚠️  Missing csv column(s) for this template\' regions:', unmatchedColumns.join(', '));
+    console.log('     Check the .csv input or pick a different template.\n');
+    return;
   }
 
   // Generate labels

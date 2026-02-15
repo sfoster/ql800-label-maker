@@ -1,6 +1,5 @@
-qrcode-image,label-text
-https://example.com/inventory/A001,Storage Box A-001
-https://example.com/inventory/A002,Storage Box A-002
-https://example.com/inventory/B001,Equipment B-001
-https://example.com/inventory/B002,Equipment B-002
-https://example.com/inventory/C001,Tool Kit C-001
+ID,Name,Quantity,Status,Assigned To,Location,Details URL,Agreement URL,Inventory URL,Owner,Notes
+51,AnyCubic Photon S Resin printer,1,Unknown,,Room 3,,,https://euglink.org/bwvYX8,EMS,
+69,Steel Locker 166,1,Ready to use,,Room 3/Versatile,,,https://euglink.org/Bwwk2S,EMS,
+83,Steel Locker 180,1,Ready to use,,Room 3/Versatile,,,https://euglink.org/LTPAud,EMS,
+96,,,,,,,,https://euglink.org/MF2d65,,
