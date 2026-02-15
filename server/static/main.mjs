@@ -94,6 +94,8 @@ export const App = new (class _App {
             anchor.download = filename;
           }
           this.updateEditor();
+          const readyEvent = new CustomEvent('label-ready');
+          window.document.dispatchEvent(readyEvent);
         });
         break;
       }
@@ -202,7 +204,9 @@ export const App = new (class _App {
 // Usage: __app.updateUI(), __app.templateInstance, etc.
 if (typeof window !== 'undefined') {
   window.__app = App;
-
+  document.addEventListener("label-ready", () => {
+    console.log("New image is ready");
+  });
   App.readyPromise.then(async () => {
     const qsParams = new URLSearchParams(location.search);
     await App.start(qsParams);

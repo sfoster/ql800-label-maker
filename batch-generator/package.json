@@ -1,0 +1,17 @@
+{
+  "name": "ql800-batch-generator",
+  "version": "1.0.0",
+  "description": "Batch label generation using headless browser",
+  "type": "module",
+  "main": "generate.js",
+  "scripts": {
+    "test": "node poc.js",
+    "test-single": "node test-single-label.js",
+    "generate": "node generate.js",
+    "example": "node generate.js --csv example-labels.csv --template ems-29x90-qrcode"
+  },
+  "dependencies": {
+    "puppeteer": "^22.0.0",
+    "csv-parse": "^5.5.0"
+  }
+}

@@ -164,7 +164,6 @@ const Emitter = new class _Emitter {
       loadedPromise.then(() => {
         delete this._scheduled[name];
         const changeEvent = new CustomEvent('page-change', { detail: name });
-        console.log("scheduleNotify, dispatchEvent for name:", name, changeEvent);
         window.document.documentElement.dispatchEvent(changeEvent);
       });
     }

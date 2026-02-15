@@ -9,4 +9,6 @@ htmlcov/
 docs/_build/
 server/qr_codes/
 qr_codes/
-
+batch-generator/package-lock.json
+batch-generator/output/*
+batch-generator/node_modules
