@@ -103,6 +103,36 @@ npm run test-single
 npm run example
 ```
 
+## Printing
+
+After generating labels, use the included print script:
+
+```bash
+# Print all labels from output directory
+./print-batch.sh
+
+# Print from custom directory
+./print-batch.sh ./my-labels
+
+# Print with different label size
+./print-batch.sh ./output 17x54
+```
+
+The script will ask for confirmation before printing and show progress for each label.
+
+## Complete Workflow
+
+```bash
+# 1. Generate labels from CSV
+npm run generate -- --csv inventory.csv
+
+# 2. Review output
+ls -lh output/
+
+# 3. Print all labels
+./print-batch.sh
+```
+
 ## Troubleshooting
 
 **"No template loaded"** - Ensure the Flask server is running and the template ID is correct.
@@ -110,3 +140,5 @@ npm run example
 **"Region not found"** - CSV column headers must exactly match template region IDs (case-sensitive).
 
 **Rendering timeout** - Increase `--delay` if labels have complex images or slow QR code generation.
+
+**Print failures** - Check printer connection with `brother_ql discover` or test manually with a single image.

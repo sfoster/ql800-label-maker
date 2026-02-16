@@ -62,6 +62,9 @@ echo ""
 success=0
 failed=0
 
+# Disable exit-on-error for the printing loop
+set +e
+
 # Print each image
 for image in "${images[@]}"; do
   filename=$(basename "$image")
@@ -71,17 +74,20 @@ for image in "${images[@]}"; do
     --backend "$BACKEND" \
     --model "$PRINTER_MODEL" \
     --printer "$PRINTER_USB" \
-    print -l "$LABEL_SIZE" "$image" > /dev/null 2>&1; then
+    print -l "$LABEL_SIZE" "$image" 2>&1 | grep -q "Printing was successful"; then
     echo "✅"
-    ((success++))
+    success=$((success + 1))
   else
     echo "❌ Failed"
-    ((failed++))
+    failed=$((failed + 1))
   fi
 
   # Small delay between prints to avoid overwhelming the printer
   sleep 0.5
 done
+
+# Re-enable exit-on-error
+set -e
 
 echo ""
 echo "✨ Complete!"

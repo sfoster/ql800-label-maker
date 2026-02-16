@@ -257,6 +257,17 @@ async function main() {
       // Generate the label
       const buffer = await generateLabel(page, record, i);
 
+      // Validate the buffer before writing
+      if (!buffer || buffer.length === 0) {
+        throw new Error('Generated PNG is empty (0 bytes)');
+      }
+
+      // Check PNG signature (89 50 4E 47 0D 0A 1A 0A)
+      const pngSignature = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+      if (!buffer.subarray(0, 8).equals(pngSignature)) {
+        throw new Error('Generated buffer is not a valid PNG');
+      }
+
       // Save to file
       const filename = generateFilename(record, i);
       const filepath = path.join(options.output, filename);
@@ -266,8 +277,9 @@ async function main() {
       console.log(`     ✅ ${filename} (${(buffer.length / 1024).toFixed(1)} KB)`);
 
     } catch (error) {
-      results.push({ success: false, error: error.message });
+      results.push({ success: false, error: error.message, record });
       console.log(`     ❌ Failed: ${error.message}`);
+      console.log(`        Row data:`, JSON.stringify(record));
     }
   }
 
