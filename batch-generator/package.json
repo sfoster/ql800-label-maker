@@ -6,7 +6,6 @@
   "main": "generate.js",
   "scripts": {
     "test": "node poc.js",
-    "test-single": "node test-single-label.js",
     "generate": "node generate.js",
     "example": "node generate.js --csv example-labels.csv --template ems-29x90-qrcode"
   },

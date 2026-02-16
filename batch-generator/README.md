@@ -57,29 +57,18 @@ npm run generate -- --help
 
 ## CSV Format
 
-The CSV file should have **column headers matching template region IDs**.
+The CSV file column headers get mapped to template region IDs. 
 
-For the `ems-29x90-qrcode` template:
+The mapping is by column name not index and extra columns are fine. For the `ems-29x90-qrcode` template it expects something like:
 
 ```csv
-qrcode-image,label-text
-https://example.com/item1,Item #001
-https://example.com/item2,Item #002
+ID,Name,Quantity,Status,Assigned To,Location,Details URL,Agreement URL,Inventory URL,Owner,Notes
+51,AnyCubic Photon S Resin printer,1,Unknown,,Room 3,,,https://euglink.org/bwvYX8,EMS,
+69,Steel Locker 166,1,Ready to use,,Room 3/Versatile,,,https://euglink.org/Bwwk2S,EMS,
+83,Steel Locker 180,1,Ready to use,,Room 3/Versatile,,,https://euglink.org/LTPAud,EMS,
 ```
 
-### Finding Region IDs
-
-1. Open the template SVG file in `server/static/label-templates/`
-2. Look for `data-region-type` attributes
-3. Use the element's `id` as the column header
-
-Example from `29x90-qrcode-label-html-text.svg`:
-```xml
-<image id="qrcode-image" data-region-type="qrcode-image" ... />
-<div id="label-text" data-region-type="text" ... />
-```
-
-Column headers: `qrcode-image`, `label-text`
+This output is from our inventory spreadsheet. Probably it should be generalized and we add a simple mapping script to get the source data into a shape that matches what the templates need. 
 
 ## Output
 
@@ -95,9 +84,6 @@ Files are named based on the `label-text` field (sanitized) or fall back to `lab
 ```bash
 # Test basic connectivity
 npm test
-
-# Generate a single test label
-npm run test-single
 
 # Generate from example CSV
 npm run example
@@ -119,26 +105,3 @@ After generating labels, use the included print script:
 ```
 
 The script will ask for confirmation before printing and show progress for each label.
-
-## Complete Workflow
-
-```bash
-# 1. Generate labels from CSV
-npm run generate -- --csv inventory.csv
-
-# 2. Review output
-ls -lh output/
-
-# 3. Print all labels
-./print-batch.sh
-```
-
-## Troubleshooting
-
-**"No template loaded"** - Ensure the Flask server is running and the template ID is correct.
-
-**"Region not found"** - CSV column headers must exactly match template region IDs (case-sensitive).
-
-**Rendering timeout** - Increase `--delay` if labels have complex images or slow QR code generation.
-
-**Print failures** - Check printer connection with `brother_ql discover` or test manually with a single image.
