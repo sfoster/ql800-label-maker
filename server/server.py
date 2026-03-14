@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, render_template, render_template_string, send_from_directory
+import shutil
 import subprocess
+import sys
 import tempfile
 import os
 import qrcode
@@ -105,8 +107,12 @@ def process_image(labelsize):
         image_file.save(temp_image.name)
         try:
             # Execute the shell command with the path to the temporary file
+            # Resolve brother_ql from the same environment as the running Python
+            brother_ql_bin = os.path.join(os.path.dirname(sys.executable), "brother_ql")
+            if not os.path.isfile(brother_ql_bin):
+                brother_ql_bin = shutil.which("brother_ql") or "brother_ql"
             command = [
-                "brother_ql", 
+                brother_ql_bin,
                 "--backend", "pyusb", 
                 "--model", "QL-800", 
                 "--printer", "usb://0x04f9:0x209b",
