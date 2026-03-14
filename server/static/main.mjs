@@ -179,11 +179,14 @@ export const App = new (class _App {
     this.optionsElem.items = [...templateMap.keys()];
     await this.optionsElem.updateComplete;
 
-    this.optionsElem.value = templateId || this.optionsElem.value;
-    await new Promise(resolve => requestAnimationFrame(resolve));
     if (templateId) {
-      this.loadSelectedTemplate(templateId);
+      this.optionsElem.value = templateId;
+    } else {
+      // use whatever the default selected value is
+      templateId = this.optionsElem.value;
     }
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    this.loadSelectedTemplate(templateId);
     this.updateEditor();
     this.editorReady = true;
   }
