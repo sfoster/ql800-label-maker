@@ -25,7 +25,26 @@ Bash script to send multiple labels to printer at once.
 
 ## Quick Start
 
-### Web UI
+### Install as a Service
+
+To install the server as a systemd service that starts automatically on boot:
+
+```bash
+chmod +x setup-service.sh
+./setup-service.sh
+```
+
+This will create a Python virtual environment, install dependencies, and set up a systemd service. The server will be available at `http://localhost:5000`.
+
+Manage the service with:
+```bash
+sudo systemctl status qrlabel-maker    # check status
+sudo systemctl restart qrlabel-maker   # restart
+sudo systemctl stop qrlabel-maker      # stop
+sudo journalctl -u qrlabel-maker -f    # view logs
+```
+
+### Manual Setup (Web UI)
 
 **1. Install Python dependencies:**
 ```bash
@@ -116,6 +135,7 @@ brother_ql --backend pyusb --model QL-800 \
 
 ```
 ql800-qrlabel-maker/
+├── setup-service.sh           # Install as a systemd service
 ├── server/                    # Flask web server
 │   ├── server.py              # Main Flask app
 │   ├── templates/index.html   # Web UI
